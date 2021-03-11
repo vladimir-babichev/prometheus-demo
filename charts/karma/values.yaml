@@ -1,0 +1,11 @@
+image:
+  tag: v0.80
+
+env:
+- name: ALERTMANAGER_URI
+  value: http://kube-prometheus-stack-alertmanager:9093
+
+ingress:
+  enabled: true
+  hosts:
+    - karma.demo

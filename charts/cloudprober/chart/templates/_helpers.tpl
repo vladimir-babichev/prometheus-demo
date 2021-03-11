@@ -60,3 +60,17 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Calculate config hashsum
+*/}}
+{{- define "application.configSha256" -}}
+{{ .Values.config | sha256sum | trunc 8 }}
+{{- end }}
+
+{{/*
+Generate config map name
+*/}}
+{{- define "application.configMapName" -}}
+{{- printf "%s-config-%s" (include "application.fullname" . ) (include "application.configSha256" .) }}
+{{- end }}

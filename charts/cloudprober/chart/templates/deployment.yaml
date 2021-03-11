@@ -22,7 +22,7 @@ spec:
       volumes:
       - name: {{ include "application.fullname" . }}-config
         configMap:
-          name: {{ include "application.fullname" . }}-config
+          name: {{ include "application.configMapName" . }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

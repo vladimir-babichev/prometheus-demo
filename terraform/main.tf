@@ -44,6 +44,19 @@ resource "helm_release" "kube-prometheus-stack" {
   depends_on = [module.aks_primary]
 }
 
+resource "helm_release" "karma" {
+  name              = "karma"
+  chart             = "karma"
+  repository        = "https://charts.helm.sh/stable"
+  dependency_update = true
+
+  values = [
+    file("${path.module}/../charts/karma/values.yaml")
+  ]
+
+  depends_on = [helm_release.kube-prometheus-stack]
+}
+
 resource "helm_release" "metrics-app" {
   name              = "metrics-app"
   chart             = "${path.module}/../charts/metrics-app/chart"

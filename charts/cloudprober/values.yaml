@@ -45,7 +45,7 @@ config: |
 
     http_probe {
       protocol: HTTP
-      requests_per_probe: 2
+      requests_per_probe: 6
     }
     interval_msec:  100 # .1s
     timeout_msec:   50  # .05s
@@ -60,7 +60,7 @@ config: |
 
     http_probe {
       protocol: HTTP
-      relative_url: "/errors/85"
+      relative_url: "/errors/47"
     }
 
     interval_msec:  600000 # 10min
@@ -76,7 +76,7 @@ config: |
 
     http_probe {
       protocol: HTTP
-      relative_url: "/errors/0"
+      relative_url: "/errors/0.01"
     }
 
     interval_msec:  900000 # 15min
