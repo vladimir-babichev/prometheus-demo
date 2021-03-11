@@ -31,6 +31,19 @@ module "aks_primary" {
 #   HELM CHARTS
 ###
 
+resource "helm_release" "ingress-nginx" {
+  name              = "ingress-nginx"
+  chart             = "ingress-nginx"
+  repository        = "https://kubernetes.github.io/ingress-nginx"
+  dependency_update = true
+
+  values = [
+    file("${path.module}/../charts/ingress-nginx/values.yaml")
+  ]
+
+  depends_on = [module.aks_primary]
+}
+
 resource "helm_release" "kube-prometheus-stack" {
   name              = "kube-prometheus-stack"
   chart             = "kube-prometheus-stack"
