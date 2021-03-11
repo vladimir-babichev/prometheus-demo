@@ -1,0 +1,33 @@
+replicaCount: 1
+
+image:
+  repository: cloudprober/cloudprober
+  pullPolicy: IfNotPresent
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations:
+    # kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: cloudprober.local
+      paths: []
+
+resources: {}
+tolerations: []
+affinity: {}
+
+metrics:
+  scanInterval: 30s
+  port: web
+
+alertRules: {}
+
+targetHost: localhost

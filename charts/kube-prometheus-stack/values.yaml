@@ -1,0 +1,84 @@
+###
+# Templated values
+###
+.hname-alertmanager: &x-hname-alertmanager "alertmanager.demo"
+.hname-grafana: &x-hname-grafana "grafana.demo"
+.hname-prometheus: &x-hname-prometheus "prometheus.demo"
+.grafana-password: &x-grafana-password "prom-demo"
+
+
+###
+# Configuration
+###
+coreDns:
+  service:
+    selector:
+      k8s-app: kube-dns
+
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    ruleSelector:
+      matchLabels:
+        release: kube-prometheus-stack
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - *x-hname-prometheus
+    paths:
+      - "/"
+
+grafana:
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - *x-hname-grafana
+    path: "/"
+  sidecar:
+    dashboards:
+      searchNamespace: ALL
+  # Configure dashboard provider to pre-install dashboards
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+  # List of dashbords we want to pre-install
+  # dashboards:
+  #   default:
+  #     argocd-dashboard:
+  #       url: https://raw.githubusercontent.com/argoproj/argo-cd/master/examples/dashboard.json
+  adminPassword: *x-grafana-password
+  grafana.ini:
+    server:
+      enable_gzip: "true"
+    analytics:
+      check_for_updates: false
+      reporting_enabled: false
+    auth.anonymous:
+      enabled: true
+
+
+alertmanager:
+  enabled: true
+  ingress:
+    enabled: true
+    annotations:
+      kubernetes.io/ingress.class: nginx
+    hosts:
+      - *x-hname-alertmanager
+    paths:
+      - "/"

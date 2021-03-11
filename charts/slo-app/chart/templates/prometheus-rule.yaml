@@ -1,0 +1,21 @@
+{{- if or .Values.prometheus.alertRules .Values.prometheus.recordRules }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "application.fullname" . }}
+  labels:
+    {{- include "application.labels" . | nindent 4 }}
+    {{ toYaml .Values.prometheus.discoveryLabels | nindent 4 }}
+spec:
+  groups:
+  {{- if .Values.prometheus.alertRules }}
+  - name: {{ include "application.fullname" . }}-alertRules
+    rules:
+    {{- toYaml .Values.prometheus.alertRules | nindent 4 }}
+  {{- end }}
+  {{- if .Values.prometheus.recordRules }}
+  - name: {{ include "application.fullname" . }}-recordRules
+    rules:
+    {{- toYaml .Values.prometheus.recordRules | nindent 4 }}
+  {{- end }}
+{{- end }}

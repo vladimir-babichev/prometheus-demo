@@ -1,0 +1,37 @@
+replicaCount: 1
+
+image:
+  repository: vbabichev/metrics-app
+  pullPolicy: IfNotPresent
+  tag: latest
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  hosts:
+    - host: metrics-app.local
+      paths: []
+
+resources: {}
+tolerations: []
+affinity: {}
+
+prometheus:
+  alertRules: {}
+  recordRules: {}
+  discoveryLabels:
+    release: kube-prometheus-stack
+  port: http
+  scanInterval: 10s
+
+grafana:
+  discoveryLabels:
+    grafana_dashboard: "1"

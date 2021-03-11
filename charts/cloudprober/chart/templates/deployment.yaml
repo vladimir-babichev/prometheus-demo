@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "cloudprober.fullname" . }}
+  labels:
+    {{- include "cloudprober.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "cloudprober.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    {{- end }}
+      labels:
+        {{- include "cloudprober.selectorLabels" . | nindent 8 }}
+    spec:
+      volumes:
+      - name: {{ include "cloudprober.fullname" . }}-config
+        configMap:
+          name: {{ include "cloudprober.fullname" . }}-config
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/cloudprober"]
+          args: [
+            "--config_file","/cfg/cloudprober.cfg",
+            "--logtostderr",
+            "--cloud_metadata=none"
+          ]
+          env:
+          - name: CLOUDPROBER_PORT
+            value: "9313"
+          volumeMounts:
+          - name: {{ include "cloudprober.fullname" . }}-config
+            mountPath: /cfg
+          ports:
+            - name: web
+              containerPort: 9313
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /metrics
+              port: web
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: web
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

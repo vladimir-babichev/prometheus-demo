@@ -1,0 +1,14 @@
+{{- if .Values.alertRules }}
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "cloudprober.fullname" . }}
+  labels:
+    release: prometheus-operator # Hack
+    {{- include "cloudprober.labels" . | nindent 4 }}
+spec:
+  groups:
+  - name: {{ include "cloudprober.fullname" . }}
+    rules:
+    {{- toYaml .Values.alertRules | nindent 4 }}
+{{- end }}
