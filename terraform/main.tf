@@ -67,3 +67,15 @@ resource "helm_release" "slo-app" {
 
   depends_on = [helm_release.kube-prometheus-stack]
 }
+
+resource "helm_release" "cloudprober" {
+  name              = "cloudprober"
+  chart             = "${path.module}/../charts/cloudprober/chart"
+  dependency_update = true
+
+  values = [
+    file("${path.module}/../charts/cloudprober/values.yaml"),
+  ]
+
+  depends_on = [helm_release.kube-prometheus-stack]
+}

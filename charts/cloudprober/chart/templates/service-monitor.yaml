@@ -2,14 +2,14 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ include "cloudprober.fullname" . }}
+  name: {{ include "application.fullname" . }}
   labels:
-    release: prometheus-operator # Hack!
-    {{- include "cloudprober.labels" . | nindent 4 }}
+    {{- include "application.labels" . | nindent 4 }}
+    {{ toYaml .Values.prometheus.discoveryLabels | nindent 4 }}
 spec:
   endpoints:
-  - interval: "{{ .Values.metrics.scanInterval }}"
-    port: "{{ .Values.metrics.port }}"
+  - interval: "{{ .Values.prometheus.scanInterval }}"
+    port: "{{ .Values.prometheus.port }}"
   selector:
     matchLabels:
-      {{- include "cloudprober.selectorLabels" . | nindent 6 }}
+      {{- include "application.selectorLabels" . | nindent 6 }}

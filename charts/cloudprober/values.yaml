@@ -5,3 +5,80 @@ ingress:
   hosts:
     - host: cloudprober.host
       paths: ["/"]
+
+config: |
+  probe {
+    name: "metrics-app"
+    type: HTTP
+    targets {
+      host_names: "metrics-app"
+    }
+
+    http_probe {
+      protocol: HTTP
+    }
+    interval_msec:  200 # .2s
+    timeout_msec:   50  # .05s
+  }
+
+  probe {
+    name: "metrics-app/err"
+    type: HTTP
+    targets {
+      host_names: "metrics-app"
+    }
+
+    http_probe {
+      protocol: HTTP
+      relative_url: "/err"
+    }
+    interval_msec:  300 # .3s
+    timeout_msec:   50  # .05s
+  }
+
+  probe {
+    name: "slo-app"
+    type: HTTP
+    targets {
+      host_names: "slo-app"
+    }
+
+    http_probe {
+      protocol: HTTP
+      requests_per_probe: 2
+    }
+    interval_msec:  100 # .1s
+    timeout_msec:   50  # .05s
+  }
+
+  probe {
+    name: "Enable slo-app errors"
+    type: HTTP
+    targets {
+      host_names: "slo-app"
+    }
+
+    http_probe {
+      protocol: HTTP
+      relative_url: "/errors/85"
+    }
+
+    interval_msec:  600000 # 10min
+    timeout_msec:   50  # .05s
+  }
+
+  probe {
+    name: "Disable slo-app errors"
+    type: HTTP
+    targets {
+      host_names: "slo-app"
+    }
+
+    http_probe {
+      protocol: HTTP
+      relative_url: "/errors/0"
+    }
+
+    interval_msec:  900000 # 15min
+    timeout_msec:   50  # .05s
+  }

@@ -1,14 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "cloudprober.fullname" . }}
+  name: {{ include "application.fullname" . }}
   labels:
-    {{- include "cloudprober.labels" . | nindent 4 }}
+    {{- include "application.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "cloudprober.selectorLabels" . | nindent 6 }}
+      {{- include "application.selectorLabels" . | nindent 6 }}
   template:
     metadata:
     {{- with .Values.podAnnotations }}
@@ -17,12 +17,12 @@ spec:
         checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
     {{- end }}
       labels:
-        {{- include "cloudprober.selectorLabels" . | nindent 8 }}
+        {{- include "application.selectorLabels" . | nindent 8 }}
     spec:
       volumes:
-      - name: {{ include "cloudprober.fullname" . }}-config
+      - name: {{ include "application.fullname" . }}-config
         configMap:
-          name: {{ include "cloudprober.fullname" . }}-config
+          name: {{ include "application.fullname" . }}-config
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -34,23 +34,23 @@ spec:
             "--cloud_metadata=none"
           ]
           env:
-          - name: CLOUDPROBER_PORT
+          - name: application_PORT
             value: "9313"
           volumeMounts:
-          - name: {{ include "cloudprober.fullname" . }}-config
+          - name: {{ include "application.fullname" . }}-config
             mountPath: /cfg
           ports:
-            - name: web
+            - name: http
               containerPort: 9313
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /metrics
-              port: web
+              port: http
           readinessProbe:
             httpGet:
               path: /metrics
-              port: web
+              port: http
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
