@@ -7,7 +7,7 @@ variable "aks_agent_size" {
 }
 
 variable "aks_pool_size" {
-    default = "2"
+    default = "1"
 }
 
 variable "location" {
